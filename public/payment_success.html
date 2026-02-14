@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Оплата успешна — NeuroBro</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <section class="section" style="padding-top:5.5rem;min-height:100svh;display:flex;align-items:center">
+    <div class="container" style="max-width:40rem">
+      <div class="card glass" style="padding:1.5rem;border:1px solid rgba(42,41,53,0.35);text-align:center">
+        <div style="width:3rem;height:3rem;border-radius:1rem;margin:0 auto 0.75rem;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,0.12);color:var(--neon-green);font-size:1.25rem">✓</div>
+        <h1 style="font-size:1.5rem;font-weight:900;margin:0 0 0.5rem">Оплата принята</h1>
+        <p class="text-sm text-muted" style="margin:0 0 1rem">
+          Спасибо! Мы проверим оплату и зачислим токены. Обычно это занимает до 1–2 минут.
+        </p>
+        <a class="btn-primary" href="/dashboard.html?pay=success" style="text-decoration:none;display:inline-block">Перейти в кабинет →</a>
+        <p class="text-xs text-muted" style="margin:1rem 0 0">Если токены не появились, обновите страницу через 1–2 минуты.</p>
+      </div>
+    </div>
+  </section>
+  <script>
+    setTimeout(() => { window.location.href = '/dashboard.html?pay=success'; }, 1800);
+  </script>
+</body>
+</html>
+

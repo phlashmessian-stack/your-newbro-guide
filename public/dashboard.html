@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NeuroBro — Дашборд</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=20260214_2342">
+</head>
+<body class="page-dashboard">
+
+<div class="dashboard" id="app">
+  <!-- Header -->
+  <header class="dashboard-header glass">
+    <div class="navbar-logo">
+      <div class="navbar-logo-icon" aria-hidden="true">
+        <svg class="brand-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18">
+          <path d="M12 2.8 20.2 7.6v8.8L12 21.2 3.8 16.4V7.6L12 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M12 7.2v9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+          <circle cx="12" cy="12" r="2.35" fill="currentColor" opacity="0.85"/>
+        </svg>
+      </div>
+      <span style="font-weight:700;font-size:0.875rem">NeuroBro</span>
+    </div>
+    <div class="header-actions">
+      <button class="token-badge glass" onclick="switchPanel('tokens')">
+        <span aria-hidden="true" style="color:var(--neon-green);display:flex">
+          <svg class="ui-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18">
+            <path d="M6.5 4h11l3 6-8.5 10L3.5 10l3-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M6 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span id="headerBalance" class="font-mono">0</span>
+      </button>
+      <button class="icon-btn" id="adminBtn" style="display:none" onclick="window.location.href='/admin.html'" title="Админ" aria-label="Админ">
+        <svg class="ui-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M19.4 15a8.5 8.5 0 0 0 .1-1 8.5 8.5 0 0 0-.1-1l2-1.4-2-3.4-2.4.7a8.8 8.8 0 0 0-1.7-1l-.3-2.5H9l-.3 2.5a8.8 8.8 0 0 0-1.7 1L4.6 8.2l-2 3.4 2 1.4a8.5 8.5 0 0 0-.1 1c0 .3 0 .7.1 1l-2 1.4 2 3.4 2.4-.7a8.8 8.8 0 0 0 1.7 1l.3 2.5h6l.3-2.5a8.8 8.8 0 0 0 1.7-1l2.4.7 2-3.4-2-1.4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="doSignOut()" title="Выйти" aria-label="Выйти">
+        <svg class="ui-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true">
+          <path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M3 12h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 8l-4 4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Body -->
+  <div class="dashboard-body">
+    <div class="panel-area">
+      <!-- ═══ CHAT ═══ -->
+      <div class="panel" id="panel-chat">
+        <div class="chat-container">
+          <!-- Sidebar -->
+          <div class="chat-sidebar glass" id="chatSidebar">
+            <div class="chat-sidebar-header">
+              <button class="btn-secondary btn-sm flex-1" onclick="newConversation()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center">➕ Новый чат</button>
+              <button class="icon-btn" style="display:none" id="closeSidebarBtn" onclick="toggleChatSidebar()">←</button>
+            </div>
+            <div class="chat-sidebar-list scrollbar-thin" id="convList"></div>
+          </div>
+
+          <!-- Chat main -->
+          <div class="chat-main">
+            <button class="history-toggle" id="mobileHistoryBtn" onclick="toggleChatSidebar()" style="margin-bottom:0.5rem">💬 История (<span id="convCount">0</span>)</button>
+            <div class="chat-messages scrollbar-thin" id="chatMessages"></div>
+            <div class="chat-input-area">
+              <div class="chat-input-wrapper glass">
+                <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="autoResize(this)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendChat()">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ IMAGE ═══ -->
+      <div class="panel" id="panel-image" hidden>
+        <div style="flex:1;overflow-y:auto" class="scrollbar-thin space-y-3">
+          <button class="settings-toggle glass" onclick="toggleSettings('imageSettings')">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span style="color:var(--neon-cyan)">✨</span>
+              <span style="font-size:0.875rem;font-weight:500">Настройки</span>
+              <span class="text-xs text-muted" id="imageSettingsSummary">1:1 · Стандарт · Фото</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span class="text-xs font-mono font-bold text-green" id="imageCostDisplay">5 ток.</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+          </button>
+          <div class="settings-content" id="imageSettings">
+            <div class="card space-y-4" style="padding:1rem">
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Формат</p>
+                <div class="select-grid" style="grid-template-columns:repeat(4,1fr)" id="imageAspectGrid"></div>
+              </div>
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Качество</p>
+                <div class="select-grid" style="grid-template-columns:repeat(3,1fr)" id="imageQualityGrid"></div>
+              </div>
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Стиль</p>
+                <div class="select-grid" style="grid-template-columns:repeat(3,1fr)" id="imageStyleGrid"></div>
+              </div>
+            </div>
+          </div>
+          <button class="history-toggle" onclick="toggleEl('imageHistory')">🕐 История генераций (<span id="imageHistoryCount">0</span>)</button>
+          <div id="imageHistory" class="space-y-2" style="display:none"></div>
+          <div id="imageEmptyState"></div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper glass" style="border-color:rgba(42,41,53,0.3)">
+            <textarea class="chat-input" id="imageInput" placeholder="Опиши что хочешь увидеть..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateImage()}" oninput="autoResize(this)"></textarea>
+            <button class="send-btn" onclick="generateImage()">🪄</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ VIDEO ═══ -->
+      <div class="panel" id="panel-video" hidden>
+        <div style="flex:1;overflow-y:auto" class="scrollbar-thin space-y-3">
+          <button class="settings-toggle glass" onclick="toggleSettings('videoSettings')">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span style="color:var(--neon-pink)">✨</span>
+              <span style="font-size:0.875rem;font-weight:500">Настройки</span>
+              <span class="text-xs text-muted" id="videoSettingsSummary">5с · 720p · 16:9</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span class="text-xs font-mono font-bold text-green" id="videoCostDisplay">20 ток.</span>
+              <span class="faq-arrow">▼</span>
+            </div>
+          </button>
+          <div class="settings-content" id="videoSettings">
+            <div class="card space-y-4" style="padding:1rem">
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Длительность</p>
+                <div class="select-grid" style="grid-template-columns:repeat(2,1fr)" id="videoDurationGrid"></div>
+              </div>
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Качество</p>
+                <div class="select-grid" style="grid-template-columns:repeat(2,1fr)" id="videoQualityGrid"></div>
+              </div>
+              <div>
+                <p class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Формат</p>
+                <div class="select-grid" style="grid-template-columns:repeat(3,1fr)" id="videoAspectGrid"></div>
+              </div>
+            </div>
+          </div>
+          <button class="history-toggle" onclick="toggleEl('videoHistory')">🕐 История генераций (<span id="videoHistoryCount">0</span>)</button>
+          <div id="videoHistory" class="space-y-2" style="display:none"></div>
+          <div id="videoEmptyState"></div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper glass" style="border-color:rgba(42,41,53,0.3)">
+            <textarea class="chat-input" id="videoInput" placeholder="Опиши сцену для видео..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateVideo()}" oninput="autoResize(this)"></textarea>
+            <button class="send-btn" onclick="generateVideo()">🎬</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TOKEN SHOP ═══ -->
+      <div class="panel" id="panel-tokens" hidden>
+        <div style="overflow-y:auto;flex:1" class="scrollbar-thin space-y-4" id="tokenShopContent"></div>
+      </div>
+
+      <!-- ═══ PROFILE ═══ -->
+      <div class="panel" id="panel-profile" hidden>
+        <div style="overflow-y:auto;flex:1" class="scrollbar-thin space-y-4" id="profileContent"></div>
+      </div>
+
+      <!-- ═══ ROLE SELECTOR ═══ -->
+      <div class="panel" id="panel-role" hidden>
+        <div style="overflow-y:auto;flex:1" class="scrollbar-thin space-y-4" id="roleContent"></div>
+      </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button class="nav-item active" onclick="switchPanel('chat')" data-panel="chat">
+          <span class="nav-icon" aria-hidden="true">
+            <svg class="nav-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </span><span class="nav-label">Чат</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('image')" data-panel="image">
+          <span class="nav-icon" aria-hidden="true">
+            <svg class="nav-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5v-13Z" stroke="currentColor" stroke-width="1.8"/><path d="M7 15l2.2-2.2a1.3 1.3 0 0 1 1.9 0L16 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M14 16l1-1a1.3 1.3 0 0 1 1.9 0L20 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 8.5a1.25 1.25 0 1 1 0 .01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span><span class="nav-label">Картинки</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('video')" data-panel="video">
+          <span class="nav-icon" aria-hidden="true">
+            <svg class="nav-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M3 7a3 3 0 0 1 3-3h7.5a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7Z" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 10.2 21 7.5v9l-4.5-2.7v-3.6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </span><span class="nav-label">Видео</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('tokens')" data-panel="tokens">
+          <span class="nav-icon" aria-hidden="true">
+            <svg class="nav-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M6.5 4h11l3 6-8.5 10L3.5 10l3-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span><span class="nav-label">Магазин</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('profile')" data-panel="profile">
+          <span class="nav-icon" aria-hidden="true">
+            <svg class="nav-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span><span class="nav-label">Профиль</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Topup Modal -->
+<div class="modal-overlay" id="topupModal" style="display:none">
+  <div class="modal-backdrop" onclick="closeTopup()"></div>
+  <div class="modal-content glass" style="border:1px solid rgba(42,41,53,0.5)">
+    <button class="modal-close" onclick="closeTopup()">✕</button>
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+      <span style="font-size:1.25rem">💎</span>
+      <h3 style="font-size:1.125rem;font-weight:600">Пополните баланс</h3>
+    </div>
+    <p class="text-sm text-muted" style="margin-bottom:1rem">Для отправки запросов нужны токены. Выберите пакет:</p>
+    <div class="space-y-2">
+      <button class="btn-secondary w-full" onclick="buyProduct('pack_small')" style="display:flex;justify-content:space-between;padding:0.75rem 1rem">
+        <div><span class="font-mono font-bold" style="font-size:1.125rem">5K</span> <span class="text-sm text-muted">токенов</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem"><span style="font-weight:600">99 ₽</span> 💳</div>
+      </button>
+      <button class="btn-secondary w-full" onclick="buyProduct('pack_medium')" style="display:flex;justify-content:space-between;padding:0.75rem 1rem">
+        <div><span class="font-mono font-bold" style="font-size:1.125rem">20K</span> <span class="text-sm text-muted">токенов</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem"><span style="font-weight:600">299 ₽</span> 💳</div>
+      </button>
+      <button class="btn-secondary w-full" onclick="buyProduct('pack_large')" style="display:flex;justify-content:space-between;padding:0.75rem 1rem">
+        <div><span class="font-mono font-bold" style="font-size:1.125rem">50K</span> <span class="text-sm text-muted">токенов</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem"><span style="font-weight:600">699 ₽</span> 💳</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/supabase-config.js?v=20260214_2342"></script>
+<script src="/js/auth.js?v=20260214_2342"></script>
+<script src="/js/dashboard.js?v=20260214_2342"></script>
+</body>
+</html>

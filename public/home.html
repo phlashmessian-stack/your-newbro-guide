@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroBro — Все нейросети в одном окне</title>
+  <meta name="description" content="AI-чат, генерация картинок и видео без VPN. Из России.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="canonical" href="https://neuro-bro.ru/">
+  <meta property="og:title" content="NeuroBro — Все нейросети в одном окне">
+  <meta property="og:description" content="AI-чат, генерация картинок и видео без VPN. Из России.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-logo">
+      <div class="navbar-logo-icon">🤖</div>
+      <span>NeuroBro</span>
+    </a>
+    <div class="navbar-links">
+      <a href="#models">Модели</a>
+      <a href="#pricing">Цены</a>
+      <a href="#faq">FAQ</a>
+      <button class="btn-primary btn-sm" onclick="scrollToEl('register')" style="margin-left:0.5rem">Начать</button>
+    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-panel">
+    <button onclick="scrollToEl('models');toggleMobileMenu()">Модели</button>
+    <button onclick="scrollToEl('pricing');toggleMobileMenu()">Цены</button>
+    <button onclick="scrollToEl('faq');toggleMobileMenu()">FAQ</button>
+    <button onclick="scrollToEl('register');toggleMobileMenu()" class="btn-primary" style="margin-top:0.5rem;text-align:center">Начать бесплатно</button>
+  </div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-blob"></div><div class="hero-blob"></div><div class="hero-blob"></div>
+  <div class="container" style="position:relative;max-width:64rem">
+    <div class="hero-badge">✨ AI-чат · Картинки · Видео · Без VPN</div>
+    <h1><span class="text-gradient">Все нейросети</span><br>в одном окне</h1>
+    <p>AI-чат, генерация картинок и видео — всё в одном месте.<br>Без VPN, без карты, за 5 секунд.</p>
+
+    <div class="stats">
+      <div class="text-center"><p class="stat-value text-gradient">15K+</p><p class="stat-label">пользователей</p></div>
+      <div class="text-center"><p class="stat-value text-gradient">1.2M+</p><p class="stat-label">запросов</p></div>
+      <div class="text-center"><p class="stat-value text-gradient">99.9%</p><p class="stat-label">аптайм</p></div>
+    </div>
+
+    <!-- Auth Form -->
+    <div class="auth-form" id="register">
+      <div class="auth-form-card glass">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabRegister" onclick="setAuthMode('register')">Регистрация</button>
+          <button class="auth-tab" id="tabLogin" onclick="setAuthMode('login')">Вход</button>
+        </div>
+        <form class="fields" id="authForm" onsubmit="handleAuth(event)">
+          <input type="email" class="input" placeholder="your@email.com" id="authEmail" required>
+          <input type="password" class="input" placeholder="Пароль" id="authPassword" style="display:none">
+          <button type="submit" class="btn-primary w-full" id="authSubmit">Создать аккаунт →</button>
+        </form>
+        <p class="hint" id="authHint">Пароль придёт на почту · Без VPN</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="section" style="border-top:1px solid rgba(42,41,53,0.1)">
+  <div class="container" style="max-width:56rem">
+    <div class="features-grid">
+      <div class="feature-item"><div class="feature-icon">🌐</div><h3>Без VPN</h3><p>Работает из России напрямую</p></div>
+      <div class="feature-item"><div class="feature-icon">🔒</div><h3>Анонимно</h3><p>Только email, никаких паспортов</p></div>
+      <div class="feature-item"><div class="feature-icon">⚡</div><h3>Мгновенно</h3><p>Регистрация за 5 секунд</p></div>
+      <div class="feature-item"><div class="feature-icon">🕐</div><h3>24/7</h3><p>Доступно круглосуточно</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="section">
+  <div class="container" style="max-width:56rem">
+    <h2 class="section-title">Как это <span class="text-gradient">работает</span></h2>
+    <p class="section-subtitle">Три шага — и ты в деле</p>
+    <div class="steps-grid">
+      <div class="card step-card"><span class="step-num">01</span><div class="step-icon">👆</div><h3>Регистрация</h3><p>Введи email — пароль придёт на почту. Всё, 5 секунд.</p></div>
+      <div class="card step-card"><span class="step-num">02</span><div class="step-icon">🤖</div><h3>Выбери инструмент</h3><p>AI-чат, генерация картинок или видео — всё в одном кабинете.</p></div>
+      <div class="card step-card"><span class="step-num">03</span><div class="step-icon">🚀</div><h3>Генерируй</h3><p>Пиши текст, создавай картинки и видео без VPN.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MODELS ═══ -->
+<section class="section" id="models" style="position:relative">
+  <div class="container" style="max-width:64rem;position:relative">
+    <h2 class="section-title">Что умеет <span class="text-gradient">NeuroBro</span></h2>
+    <p class="section-subtitle">Три мощных инструмента в одном сервисе</p>
+    <div class="models-grid" id="modelsGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ REVIEWS ═══ -->
+<section class="section">
+  <div class="container" style="max-width:64rem">
+    <h2 class="section-title">Что говорят <span class="text-gradient">пользователи</span></h2>
+    <p class="section-subtitle">Реальные отзывы наших юзеров</p>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="section" id="pricing">
+  <div class="container" style="max-width:56rem">
+    <h2 class="section-title">Простые <span class="text-gradient">тарифы</span></h2>
+    <p class="section-subtitle">Или покупай токены отдельно</p>
+    <div class="pricing-grid" id="pricingGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="section" id="faq">
+  <div class="container" style="max-width:40rem">
+    <h2 class="section-title">Частые <span class="text-gradient">вопросы</span></h2>
+    <div class="space-y-2" id="faqList" style="margin-top:2rem"></div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="section" style="padding:5rem 1rem;text-align:center">
+  <h2 style="font-size:clamp(1.75rem,5vw,3rem);font-weight:900;margin-bottom:1rem">Хватит мучаться<br><span class="text-gradient">с VPN</span></h2>
+  <p class="text-muted" style="margin-bottom:2rem">15,000+ пользователей уже генерируют контент без ограничений</p>
+  <button class="btn-primary" onclick="scrollToEl('register')" style="font-size:1rem;padding:0.875rem 2rem">Попробовать бесплатно →</button>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="container" style="max-width:64rem">
+    <div class="footer-inner">
+      <div class="navbar-logo"><div class="navbar-logo-icon">🤖</div><span>NeuroBro</span></div>
+      <div class="footer-links">
+        <a href="/privacy.html">Политика конфиденциальности</a>
+        <a href="/terms.html">Пользовательское соглашение</a>
+        <a href="/support.html">Поддержка</a>
+      </div>
+      <div class="footer-right"><span>🔒 Безопасно</span><span>·</span><span>© <span id="year"></span> NeuroBro</span></div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/supabase-config.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/landing.js"></script>
+</body>
+</html>

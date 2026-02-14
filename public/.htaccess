@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing files as-is
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Root → index.html (переименуйте home.html → index.html!)
+  RewriteRule ^$ index.html [L]
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType text/css .css
+  AddType image/svg+xml .svg
+</IfModule>
+
+# Защита API — только POST/OPTIONS
+<IfModule mod_rewrite.c>
+  <Files "chat.php">
+    <LimitExcept POST OPTIONS>
+      Deny from all
+    </LimitExcept>
+  </Files>
+</IfModule>
+
+# Запретить доступ к служебным файлам
+<FilesMatch "\.(md|log|bak)$">
+  Deny from all
+</FilesMatch>

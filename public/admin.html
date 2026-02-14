@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroBro — Админ</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=20260214_2342">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar glass">
+    <div class="admin-sidebar-logo">
+      <div class="navbar-logo-icon" aria-hidden="true">
+        <svg class="brand-ico" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2.8 20.2 7.6v8.8L12 21.2 3.8 16.4V7.6L12 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M12 7.2v9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+          <circle cx="12" cy="12" r="2.35" fill="currentColor" opacity="0.85"/>
+        </svg>
+      </div>
+      <div>
+        <p style="font-weight:700;font-size:0.875rem">NeuroBro</p>
+        <p class="text-xs text-muted">Админ-панель</p>
+      </div>
+    </div>
+    <nav id="sidebarNav"></nav>
+    <button class="admin-nav-item" onclick="window.location.href='/dashboard.html'" style="margin-top:auto">← Назад</button>
+  </aside>
+  <div class="admin-mobile-nav"><div class="admin-mobile-nav-inner" id="mobileNav"></div></div>
+  <main class="admin-main" id="adminMain"><p class="text-muted text-center" style="padding:2rem">Загрузка...</p></main>
+</div>
+<script src="/js/supabase-config.js?v=20260214_2342"></script>
+<script src="/js/auth.js?v=20260214_2342"></script>
+<script src="/js/admin.js?v=20260214_2342"></script>
+</body>
+</html>

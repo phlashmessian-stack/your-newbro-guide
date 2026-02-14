@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Оплата не завершена — NeuroBro</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <section class="section" style="padding-top:5.5rem;min-height:100svh;display:flex;align-items:center">
+    <div class="container" style="max-width:40rem">
+      <div class="card glass" style="padding:1.5rem;border:1px solid rgba(42,41,53,0.35);text-align:center">
+        <div style="width:3rem;height:3rem;border-radius:1rem;margin:0 auto 0.75rem;display:flex;align-items:center;justify-content:center;background:rgba(236,72,153,0.12);color:var(--neon-pink);font-size:1.25rem">!</div>
+        <h1 style="font-size:1.5rem;font-weight:900;margin:0 0 0.5rem">Оплата не завершена</h1>
+        <p class="text-sm text-muted" style="margin:0 0 1rem">
+          Похоже, платеж был отменен или не прошел. Попробуйте снова или выберите другой способ оплаты.
+        </p>
+        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+          <a class="btn-primary" href="/dashboard.html?pay=fail" style="text-decoration:none;display:inline-block">Вернуться в кабинет →</a>
+          <a class="btn-secondary" href="/support.html" style="text-decoration:none;display:inline-block">Написать в поддержку</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    setTimeout(() => { window.location.href = '/dashboard.html?pay=fail'; }, 2500);
+  </script>
+</body>
+</html>
+

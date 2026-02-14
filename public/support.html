@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Поддержка — NeuroBro</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-logo">
+      <div class="navbar-logo-icon">🤖</div>
+      <span>NeuroBro</span>
+    </a>
+    <div class="navbar-links">
+      <a href="/privacy.html">Политика</a>
+      <a href="/terms.html">Соглашение</a>
+      <a href="/dashboard.html" class="btn-primary btn-sm" style="margin-left:0.5rem;display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none">Личный кабинет →</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" style="display:none">
+  <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-panel">
+    <a href="/privacy.html" style="text-decoration:none;color:inherit"><button>Политика конфиденциальности</button></a>
+    <a href="/terms.html" style="text-decoration:none;color:inherit"><button>Пользовательское соглашение</button></a>
+    <a href="/dashboard.html" style="text-decoration:none;color:inherit"><button class="btn-primary" style="margin-top:0.5rem;text-align:center">Личный кабинет</button></a>
+  </div>
+</div>
+
+<section class="section" style="padding-top:5.5rem">
+  <div class="container" style="max-width:56rem">
+    <div class="card glass" style="padding:1.25rem;border:1px solid rgba(42,41,53,0.35)">
+      <h1 style="font-size:clamp(1.5rem,4vw,2.25rem);font-weight:900;margin:0 0 0.5rem">Поддержка</h1>
+      <p class="text-sm text-muted" style="margin:0">Если что-то не работает или есть вопросы по оплате, токенам и аккаунту.</p>
+    </div>
+
+    <div class="space-y-4" style="margin-top:1rem">
+      <div class="card" style="padding:1.25rem">
+        <h2 style="font-size:1.125rem;font-weight:800;margin:0 0 0.75rem">Контакты</h2>
+        <div class="text-sm text-muted space-y-2">
+          <p style="margin:0"><strong>Email:</strong> <a href="mailto:support@neuro-bro.ru" style="color:var(--neon-cyan);text-decoration:underline">support@neuro-bro.ru</a></p>
+          <p style="margin:0"><strong>Telegram:</strong> <span class="font-mono" style="color:var(--fg)">@neurobro_support</span></p>
+          <p style="margin:0"><strong>Сайт:</strong> <a href="https://neuro-bro.ru" style="color:var(--primary);text-decoration:underline">neuro-bro.ru</a></p>
+        </div>
+        <div class="card" style="margin-top:1rem;padding:0.9rem;border-left:4px solid rgba(34,197,94,0.35)">
+          <p class="text-sm text-muted" style="margin:0">
+            Если пишете по оплате, укажите email аккаунта и примерное время платежа. Так мы быстрее найдем заказ.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:1.25rem">
+        <h2 style="font-size:1.125rem;font-weight:800;margin:0 0 0.75rem">Время ответа</h2>
+        <div class="text-sm text-muted space-y-2">
+          <p style="margin:0">Обычно отвечаем в течение <strong style="color:var(--fg)">1–6 часов</strong> (в рабочее время).</p>
+          <p style="margin:0">В редких случаях (нагрузка/праздники) — до <strong style="color:var(--fg)">24 часов</strong>.</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:1.25rem">
+        <h2 style="font-size:1.125rem;font-weight:800;margin:0 0 0.75rem">Частые вопросы</h2>
+        <div class="text-sm text-muted space-y-2">
+          <p style="margin:0"><strong>Не пришло письмо с паролем.</strong> Проверьте Спам/Промоакции и попробуйте зарегистрироваться снова. Если не помогло — напишите в поддержку.</p>
+          <p style="margin:0"><strong>Оплата прошла, токены не начислились.</strong> Иногда вебхук приходит с задержкой. Подождите 2–5 минут и обновите страницу. Если не начислилось — пришлите email и время платежа.</p>
+          <p style="margin:0"><strong>Хочу удалить аккаунт.</strong> Напишите с почты аккаунта — удалим данные и доступ.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container" style="max-width:56rem">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="/privacy.html">Политика</a>
+        <a href="/terms.html">Соглашение</a>
+        <a href="/support.html">Поддержка</a>
+      </div>
+      <div class="footer-right"><span>© <span id="year"></span> NeuroBro</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleMobileMenu() {
+    const el = document.getElementById('mobileMenu');
+    el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+  }
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
+
