@@ -391,10 +391,12 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
     position: fixed;
     left: 0;
     right: 0;
-    bottom: calc(env(safe-area-inset-bottom) + var(--nb-nav-h));
+    /* Use bottom instead of transform — iOS handles bottom changes on fixed
+       elements much more reliably than transform during keyboard animations. */
+    bottom: calc(env(safe-area-inset-bottom) + var(--nb-nav-h) + var(--nb-kb));
     z-index: 70;
-    transform: translateY(calc(-1 * var(--nb-kb)));
-    transition: transform 160ms ease-out;
+    /* NO transition — instant repositioning prevents conflict with iOS native
+       keyboard animation and eliminates the visible "jump". */
     padding: 0.75rem 0.75rem;
     background: linear-gradient(
       180deg,
@@ -412,14 +414,12 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: var(--nb-kb);
     z-index: 60;
-    transform: translateY(calc(-1 * var(--nb-kb)));
-    transition: transform 160ms ease-out, opacity 160ms ease-out;
+    /* No transition — same reasoning as composer. */
   }
 
   body.page-dashboard .dashboard-body {
-    /* Avoid content going behind the fixed composer + nav when keyboard is closed. */
     padding-bottom: calc(var(--nb-nav-h) + var(--nb-composer-h));
   }
 
