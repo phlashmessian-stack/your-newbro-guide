@@ -80,6 +80,21 @@
       requestAnimationFrame(() => { lockScroll(); schedule(); });
     }, 0);
   }, { passive: true });
+
+  // Block page-level touchmove to prevent the whole page from scrolling.
+  // Only allow scroll inside designated scrollable containers.
+  document.addEventListener("touchmove", (e) => {
+    let el = e.target;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      const overflowY = style.overflowY;
+      if ((overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight) {
+        return; // allow scroll inside this container
+      }
+      el = el.parentElement;
+    }
+    e.preventDefault(); // block page scroll
+  }, { passive: false });
 })();
 
 // Helper: get correct input element (mobile overlay vs desktop inline)
