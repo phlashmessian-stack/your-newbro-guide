@@ -17,26 +17,28 @@
     const keyboardOpen = kbDiff > 50;
     try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) {}
 
-    // Position overlay composer directly
+    // Position overlay composer directly using visualViewport (most reliable on iOS)
     const composer = document.getElementById("mobileComposer");
     if (composer && isMobile()) {
       const nav = document.querySelector(".bottom-nav");
       const navH = nav ? nav.getBoundingClientRect().height : 0;
+      const composerH = composer.getBoundingClientRect().height || 56;
 
-      if (keyboardOpen) {
-        // Keyboard open: position fixed bottom = keyboard height.
-        // This places composer exactly above the keyboard with no gap.
-        const kbHeight = Math.round(layoutH - h);
-        composer.style.top = "auto";
-        composer.style.bottom = kbHeight + "px";
-      } else {
-        // Keyboard closed: place composer above the bottom nav
-        composer.style.top = "auto";
-        composer.style.bottom = Math.round(navH) + "px";
-      }
       composer.style.position = "fixed";
       composer.style.left = "0";
       composer.style.right = "0";
+      composer.style.bottom = "auto";
+
+      if (keyboardOpen && vv) {
+        // Place composer exactly at the bottom of the visible viewport
+        // vv.offsetTop + vv.height = bottom edge of visible area (above keyboard)
+        const topPos = vv.offsetTop + vv.height - composerH;
+        composer.style.top = Math.round(topPos) + "px";
+      } else {
+        // Keyboard closed: place composer above the bottom nav
+        const topPos = (vv ? vv.height : window.innerHeight) - navH - composerH;
+        composer.style.top = Math.round(topPos) + "px";
+      }
     }
 
     // Measure nav/composer for padding
