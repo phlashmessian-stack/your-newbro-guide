@@ -18,21 +18,22 @@
     // Position overlay composer directly
     const composer = document.getElementById("mobileComposer");
     if (composer && isMobile()) {
-      if (vv && vv.height) {
-        // Place composer at the bottom of the visual viewport
-        // vv.offsetTop = how much the viewport has scrolled
+      const nav = document.querySelector(".bottom-nav");
+      const navH = nav ? nav.getBoundingClientRect().height : 0;
+
+      if (keyboardOpen && vv && vv.height) {
+        // Keyboard open: place composer at the bottom of the visual viewport (above keyboard)
         const top = vv.offsetTop + vv.height - composer.offsetHeight;
-        composer.style.position = "fixed";
         composer.style.bottom = "auto";
         composer.style.top = Math.max(0, Math.round(top)) + "px";
-        composer.style.left = "0";
-        composer.style.right = "0";
       } else {
-        // Fallback: stick to bottom
-        composer.style.position = "fixed";
+        // Keyboard closed: place composer above the bottom nav
         composer.style.top = "auto";
-        composer.style.bottom = "0";
+        composer.style.bottom = Math.round(navH) + "px";
       }
+      composer.style.position = "fixed";
+      composer.style.left = "0";
+      composer.style.right = "0";
     }
 
     // Measure nav/composer for padding
