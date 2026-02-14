@@ -8,18 +8,15 @@
 
   const set = () => {
     const vv = window.visualViewport;
-    const vvH = vv && vv.height ? vv.height : window.innerHeight;
-    // IMPORTANT: --nb-vh must ALWAYS be the full layout height (not visual viewport).
-    // Otherwise body shrinks when keyboard opens and everything disappears.
+    const vvH = vv ? vv.height : window.innerHeight;
     const fullH = window.innerHeight;
     root.style.setProperty("--nb-vh", `${Math.round(fullH)}px`);
 
-    const layoutH = fullH;
-    const kbDiff = vv && vv.height ? (layoutH - vv.height) : 0;
+    const kbDiff = vv ? (fullH - vv.height) : 0;
     const keyboardOpen = kbDiff > 50;
     try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) {}
 
-    // Position overlay composer using visualViewport (most reliable on iOS)
+    // Position overlay composer using visualViewport
     const composer = document.getElementById("mobileComposer");
     if (composer && isMobile()) {
       const nav = document.querySelector(".bottom-nav");
@@ -29,14 +26,17 @@
       composer.style.position = "fixed";
       composer.style.left = "0";
       composer.style.right = "0";
-      composer.style.bottom = "auto";
 
       if (keyboardOpen && vv) {
-        const topPos = vv.offsetTop + vv.height - composerH;
-        composer.style.top = Math.round(topPos) + "px";
+        // iOS: visualViewport.offsetTop = how much the layout viewport scrolled up
+        // We need to position relative to the VISUAL viewport bottom edge
+        const visBottom = vv.offsetTop + vv.height;
+        composer.style.top = Math.round(visBottom - composerH) + "px";
+        composer.style.bottom = "auto";
       } else {
-        const topPos = fullH - navH - composerH;
-        composer.style.top = Math.round(topPos) + "px";
+        // Keyboard closed: sit above bottom nav
+        composer.style.top = "auto";
+        composer.style.bottom = Math.round(navH) + "px";
       }
     }
 
@@ -59,11 +59,10 @@
   window.addEventListener("resize", schedule, { passive: true });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", schedule, { passive: true });
-    // Also listen to scroll — needed for offsetTop when keyboard pushes viewport
     window.visualViewport.addEventListener("scroll", schedule, { passive: true });
   }
 
-  // Scroll lock on focus
+  // Scroll lock on focus — prevent iOS from scrolling the page
   document.addEventListener("focusin", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
@@ -75,26 +74,27 @@
         document.body.scrollTop = 0;
       } catch (err) {}
     };
-    setTimeout(() => {
-      lockScroll();
-      schedule();
-      requestAnimationFrame(() => { lockScroll(); schedule(); });
-    }, 0);
+    // Multiple attempts to lock scroll during keyboard animation
+    lockScroll();
+    setTimeout(() => { lockScroll(); schedule(); }, 50);
+    setTimeout(() => { lockScroll(); schedule(); }, 150);
+    setTimeout(() => { lockScroll(); schedule(); }, 300);
+    setTimeout(() => { lockScroll(); schedule(); }, 500);
   }, { passive: true });
 
-  // Block page-level touchmove to prevent the whole page from scrolling.
-  // Only allow scroll inside designated scrollable containers.
+  // Block page-level touchmove. CSS touch-action:none on body handles most cases,
+  // but this is a fallback for older browsers.
   document.addEventListener("touchmove", (e) => {
     let el = e.target;
     while (el && el !== document.body) {
       const style = window.getComputedStyle(el);
       const overflowY = style.overflowY;
       if ((overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight) {
-        return; // allow scroll inside this container
+        return;
       }
       el = el.parentElement;
     }
-    e.preventDefault(); // block page scroll
+    e.preventDefault();
   }, { passive: false });
 })();
 
