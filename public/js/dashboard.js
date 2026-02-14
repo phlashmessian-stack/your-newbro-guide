@@ -61,6 +61,15 @@
       const comp = document.getElementById("mobileComposer");
       if (comp && isMobile()) root.style.setProperty("--nb-composer-h", `${Math.round(comp.getBoundingClientRect().height)}px`);
     } catch (e) {}
+
+
+    // Auto-scroll chat to bottom when layout changes (keyboard open/close)
+    if (isMobile()) {
+      const chatMsgs = document.getElementById("chatMessages");
+      if (chatMsgs) {
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      }
+    }
   };
 
   let raf = 0;
