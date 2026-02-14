@@ -12,7 +12,9 @@
     root.style.setProperty("--nb-vh", `${Math.round(h)}px`);
 
     const layoutH = window.innerHeight || h;
-    const keyboardOpen = vv && vv.height && (layoutH - vv.height) > 120;
+    // Lower threshold (50px) to detect keyboard earlier during animation
+    const kbDiff = vv && vv.height ? (layoutH - vv.height) : 0;
+    const keyboardOpen = kbDiff > 50;
     try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) {}
 
     // Position overlay composer directly
@@ -20,12 +22,15 @@
     if (composer && isMobile()) {
       const nav = document.querySelector(".bottom-nav");
       const navH = nav ? nav.getBoundingClientRect().height : 0;
+      const composerH = composer.offsetHeight;
 
-      if (keyboardOpen && vv && vv.height) {
-        // Keyboard open: place composer at the bottom of the visual viewport (above keyboard)
-        const top = vv.offsetTop + vv.height - composer.offsetHeight;
+      if (keyboardOpen) {
+        // Keyboard open: body is position:fixed, so vv.offsetTop should be ~0.
+        // Place composer at bottom of visible area = vv.height - composerH.
+        // Do NOT use vv.offsetTop (unreliable on iOS with fixed body).
+        const topPos = Math.round(h - composerH);
         composer.style.bottom = "auto";
-        composer.style.top = Math.max(0, Math.round(top)) + "px";
+        composer.style.top = Math.max(0, topPos) + "px";
       } else {
         // Keyboard closed: place composer above the bottom nav
         composer.style.top = "auto";
