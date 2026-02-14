@@ -356,20 +356,23 @@ body.page-dashboard {
 /* JS sets --nb-vh for precise viewport tracking */
 body.page-dashboard { height: var(--nb-vh, 100dvh); }
 
-/* Lock body position on ALL mobile devices (not just Safari) */
+/* On mobile: do NOT use position:fixed on body — it creates a new containing
+   block and breaks position:fixed on children (composer) when iOS keyboard opens. */
 @media (max-width: 768px) {
-  body.page-dashboard {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--nb-vh, 100dvh);
+  html.page-dashboard-root {
+    /* Prevent overscroll / pull-to-refresh */
     overflow: hidden;
-    overscroll-behavior: none;
-    /* Prevent text selection causing scroll */
-    -webkit-overflow-scrolling: auto;
+    height: 100%;
   }
-  body.page-dashboard .dashboard { overflow: hidden; }
+  body.page-dashboard {
+    overflow: hidden;
+    height: 100%;
+    /* NO position:fixed here! */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+    touch-action: none; /* prevent gestures on body */
+  }
+  body.page-dashboard .dashboard { overflow: hidden; height: 100%; }
   body.page-dashboard .dashboard-body { overflow: hidden; }
   body.page-dashboard .panel-area { overflow: hidden; }
   body.page-dashboard .panel { overflow: hidden; }
@@ -385,7 +388,8 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
   body.page-dashboard #roleContent {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain; /* prevent scroll chaining to parent */
+    overscroll-behavior: contain;
+    touch-action: pan-y; /* re-enable vertical scroll in these containers */
   }
 }
 
