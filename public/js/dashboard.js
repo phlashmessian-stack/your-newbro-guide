@@ -22,15 +22,13 @@
     if (composer && isMobile()) {
       const nav = document.querySelector(".bottom-nav");
       const navH = nav ? nav.getBoundingClientRect().height : 0;
-      const composerH = composer.offsetHeight;
 
       if (keyboardOpen) {
-        // Keyboard open: body is position:fixed, so vv.offsetTop should be ~0.
-        // Place composer at bottom of visible area = vv.height - composerH.
-        // Do NOT use vv.offsetTop (unreliable on iOS with fixed body).
-        const topPos = Math.round(h - composerH);
-        composer.style.bottom = "auto";
-        composer.style.top = Math.max(0, topPos) + "px";
+        // Keyboard open: position fixed bottom = keyboard height.
+        // This places composer exactly above the keyboard with no gap.
+        const kbHeight = Math.round(layoutH - h);
+        composer.style.top = "auto";
+        composer.style.bottom = kbHeight + "px";
       } else {
         // Keyboard closed: place composer above the bottom nav
         composer.style.top = "auto";
