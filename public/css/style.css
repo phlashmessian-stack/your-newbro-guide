@@ -375,48 +375,48 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
   body.page-dashboard .chat-messages { min-height: 0; }
 }
 
-/* --- Mobile composer + bottom nav pinning (iOS/Android) --------------------
-   We keep the whole app shell non-scrollable and pin the composer & tabbar
-   using `position: fixed`. When the keyboard opens, JS updates --nb-kb and
-   we lift these UI bars using `transform: translateY(-var(--nb-kb))`.
----------------------------------------------------------------------------- */
+/* --- Mobile composer overlay (outside .dashboard for iOS stability) -------
+   On desktop the inline .desktop-only-composer is shown.
+   On mobile it's hidden; #mobileComposer (at end of <body>) takes over.
+   JS positions #mobileComposer directly using visualViewport so there is
+   zero reliance on CSS custom properties or transform hacks.
+-------------------------------------------------------------------------- */
 :root {
-  --nb-kb: 0px;     /* keyboard height, set in JS */
-  --nb-nav-h: 86px; /* measured in JS */
-  --nb-composer-h: 86px; /* measured in JS */
+  --nb-kb: 0px;
+  --nb-nav-h: 86px;
+  --nb-composer-h: 86px;
 }
 
+/* Desktop: inline composers visible, overlay hidden */
+.mobile-composer-overlay { display: none; }
+
 @media (max-width: 768px) {
-  body.page-dashboard .chat-input-area {
+  /* Hide inline composers on mobile */
+  .desktop-only-composer { display: none !important; }
+
+  /* Show overlay composer */
+  .mobile-composer-overlay {
+    display: block;
     position: fixed;
     left: 0;
     right: 0;
-    /* Use bottom instead of transform — iOS handles bottom changes on fixed
-       elements much more reliably than transform during keyboard animations. */
-    bottom: calc(env(safe-area-inset-bottom) + var(--nb-nav-h) + var(--nb-kb));
-    z-index: 70;
-    /* NO transition — instant repositioning prevents conflict with iOS native
-       keyboard animation and eliminates the visible "jump". */
-    padding: 0.75rem 0.75rem;
-    background: linear-gradient(
-      180deg,
-      rgba(12, 12, 18, 0.00) 0%,
-      rgba(12, 12, 18, 0.65) 35%,
-      rgba(12, 12, 18, 0.85) 100%
-    );
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    z-index: 9999;
+    padding: 0.5rem 0.75rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    background: rgba(12, 12, 18, 0.92);
+    /* NO transform, NO transition — JS sets bottom/top directly via style */
   }
-
-  body.page-dashboard .chat-input-wrapper { max-width: 56rem; margin: 0 auto; }
+  .mobile-composer-overlay .chat-input-wrapper {
+    max-width: 56rem;
+    margin: 0 auto;
+  }
 
   body.page-dashboard .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: var(--nb-kb);
+    bottom: 0;
     z-index: 60;
-    /* No transition — same reasoning as composer. */
   }
 
   body.page-dashboard .dashboard-body {
@@ -430,11 +430,13 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
   }
 }
 
-/* When keyboard is open, hide the bottom nav like messenger apps (more stable on iOS).
-   Composer remains visible and pinned above the keyboard. */
+/* When keyboard is open, hide the bottom nav */
 body.page-dashboard.nb-kb-open .bottom-nav {
   opacity: 0;
   pointer-events: none;
+}
+body.page-dashboard.nb-kb-open .mobile-composer-overlay {
+  padding-bottom: 0.25rem;
 }
 
 /* iOS Safari zooms the viewport on focus if input font-size < 16px. */
