@@ -1,40 +1,49 @@
 // Dashboard logic
-// iOS Safari keyboard fix:
-// When the keyboard opens, visualViewport.height shrinks but CSS 100vh can stay stale.
-// We pin the app height to visualViewport.height so the composer + send button remain visible.
+// iOS Safari keyboard fix — overlay composer approach:
+// The mobile composer (#mobileComposer) lives OUTSIDE .dashboard (at end of <body>).
+// JS positions it directly using visualViewport so iOS can't scroll it away.
 (function setupMobileViewportFix() {
   const root = document.documentElement;
+  const isMobile = () => window.innerWidth <= 768;
+
   const set = () => {
     const vv = window.visualViewport;
     const h = vv && vv.height ? vv.height : window.innerHeight;
     root.style.setProperty("--nb-vh", `${Math.round(h)}px`);
 
-    // Add a class while the keyboard is open (useful for any future layout tweaks).
-    // Threshold: when visual viewport is significantly smaller than layout viewport.
     const layoutH = window.innerHeight || h;
     const keyboardOpen = vv && vv.height && (layoutH - vv.height) > 120;
-    try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) { /* ignore */ }
+    try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) {}
 
-    // Keyboard height (px). On iOS, visualViewport.offsetTop can jump during URL bar animations
-    // and causes huge wrong values. Use innerHeight - visualViewport.height and clamp it.
-    let kb = 0;
-    if (vv && vv.height) {
-      kb = Math.max(0, (layoutH - vv.height));
-      // Clamp: prevent insane jumps that push the UI to the middle of the screen.
-      kb = Math.min(kb, Math.max(0, Math.round(layoutH * 0.65)));
+    // Position overlay composer directly
+    const composer = document.getElementById("mobileComposer");
+    if (composer && isMobile()) {
+      if (vv && vv.height) {
+        // Place composer at the bottom of the visual viewport
+        // vv.offsetTop = how much the viewport has scrolled
+        const top = vv.offsetTop + vv.height - composer.offsetHeight;
+        composer.style.position = "fixed";
+        composer.style.bottom = "auto";
+        composer.style.top = Math.max(0, Math.round(top)) + "px";
+        composer.style.left = "0";
+        composer.style.right = "0";
+      } else {
+        // Fallback: stick to bottom
+        composer.style.position = "fixed";
+        composer.style.top = "auto";
+        composer.style.bottom = "0";
+      }
     }
-    root.style.setProperty("--nb-kb", `${Math.round(kb)}px`);
 
-    // Measure bottom nav / composer heights (so padding stays correct across devices).
-    // This is cheap and avoids hardcoding.
+    // Measure nav/composer for padding
     try {
       const nav = document.querySelector(".bottom-nav");
       if (nav) root.style.setProperty("--nb-nav-h", `${Math.round(nav.getBoundingClientRect().height)}px`);
-      const composer = document.querySelector(".panel:not([hidden]) .chat-input-area");
-      if (composer) root.style.setProperty("--nb-composer-h", `${Math.round(composer.getBoundingClientRect().height)}px`);
-    } catch (e) { /* ignore */ }
+      const comp = document.getElementById("mobileComposer");
+      if (comp && isMobile()) root.style.setProperty("--nb-composer-h", `${Math.round(comp.getBoundingClientRect().height)}px`);
+    } catch (e) {}
   };
-  // Throttle to animation frames to avoid WebKit "jank" on focus.
+
   let raf = 0;
   const schedule = () => {
     if (raf) return;
@@ -45,14 +54,11 @@
   window.addEventListener("resize", schedule, { passive: true });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", schedule, { passive: true });
-    // Intentionally NOT listening to visualViewport.scroll: it fires during UI chrome animations
-    // and causes layout jumps.
+    // Also listen to scroll — needed for offsetTop when keyboard pushes viewport
+    window.visualViewport.addEventListener("scroll", schedule, { passive: true });
   }
 
-  // Hard scroll-lock on focus: iOS can still try to scroll the document even with fixed body.
-  // Keep the "app shell" anchored at the top.
-  // Double-tap scrollTo: first in setTimeout(0) to catch the initial iOS scroll,
-  // then again in rAF to catch any deferred layout shift.
+  // Scroll lock on focus
   document.addEventListener("focusin", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
@@ -62,22 +68,29 @@
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
-      } catch (err) { /* ignore */ }
+      } catch (err) {}
     };
-    // Immediate tick
     setTimeout(() => {
       lockScroll();
       schedule();
-      // Second pass after layout
-      requestAnimationFrame(() => {
-        lockScroll();
-        schedule();
-      });
+      requestAnimationFrame(() => { lockScroll(); schedule(); });
     }, 0);
   }, { passive: true });
 })();
 
-let currentUser = null;
+// Helper: get correct input element (mobile overlay vs desktop inline)
+function getChatInput() {
+  if (window.innerWidth <= 768) return document.getElementById("chatInput");
+  return document.getElementById("chatInputDesktop") || document.getElementById("chatInput");
+}
+function getImageInput() {
+  if (window.innerWidth <= 768) return document.getElementById("chatInput"); // reused on mobile
+  return document.getElementById("imageInputDesktop");
+}
+function getVideoInput() {
+  if (window.innerWidth <= 768) return document.getElementById("chatInput"); // reused on mobile
+  return document.getElementById("videoInputDesktop");
+}
 let profile = null;
 let isAdmin = false;
 let activePanel = 'chat';
@@ -288,6 +301,38 @@ function switchPanel(panel) {
   // Start/stop support polling to surface admin replies quickly.
   if (panel === 'profile') supportStartPolling();
   else supportStopPolling();
+
+  // Update mobile overlay composer for active panel
+  updateMobileComposer(panel);
+}
+
+function updateMobileComposer(panel) {
+  const overlay = document.getElementById('mobileComposer');
+  if (!overlay || window.innerWidth > 768) return;
+  const input = overlay.querySelector('.chat-input');
+  const btn = overlay.querySelector('.send-btn');
+  if (!input || !btn) return;
+
+  // Panels with input: chat, image, video. Others: hide composer.
+  const hasInput = ['chat', 'image', 'video'].includes(panel);
+  overlay.style.display = hasInput ? 'block' : 'none';
+
+  if (panel === 'chat') {
+    input.placeholder = 'Напишите сообщение...';
+    btn.textContent = '➤';
+    btn.onclick = () => sendChat();
+    input.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } };
+  } else if (panel === 'image') {
+    input.placeholder = 'Опиши что хочешь увидеть...';
+    btn.textContent = '🪄';
+    btn.onclick = () => generateImage();
+    input.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateImage(); } };
+  } else if (panel === 'video') {
+    input.placeholder = 'Опиши сцену для видео...';
+    btn.textContent = '🎬';
+    btn.onclick = () => generateVideo();
+    input.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateVideo(); } };
+  }
 }
 
 function supportSetNavDot(on) {
@@ -408,7 +453,7 @@ function renderChat() {
 
 async function sendChat() {
   if (chatLoading) return;
-  const input = document.getElementById('chatInput');
+  const input = getChatInput();
   const text = input.value.trim();
   if (!text) return;
 
@@ -516,7 +561,7 @@ function renderImageEmpty() {
 }
 
 async function generateImage() {
-  const input = document.getElementById('imageInput');
+  const input = window.innerWidth <= 768 ? document.getElementById('chatInput') : (document.getElementById('imageInputDesktop') || document.getElementById('chatInput'));
   const text = input.value.trim();
   if (!text) return;
   const cost = imageQualities.find(q => q.value === imageQuality).cost;
@@ -604,7 +649,7 @@ function renderVideoEmpty() {
 }
 
 async function generateVideo() {
-  const input = document.getElementById('videoInput');
+  const input = window.innerWidth <= 768 ? document.getElementById('chatInput') : (document.getElementById('videoInputDesktop') || document.getElementById('chatInput'));
   const text = input.value.trim();
   if (!text) return;
   const cost = videoQualitySt === '1080' ? 30 : 20;

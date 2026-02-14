@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=20260214_2400">
+  <link rel="stylesheet" href="/css/style.css?v=20260215_0100">
 </head>
 <body class="page-dashboard">
 
@@ -72,10 +72,11 @@
           <div class="chat-main">
             <button class="history-toggle" id="mobileHistoryBtn" onclick="toggleChatSidebar()" style="margin-bottom:0.5rem">💬 История (<span id="convCount">0</span>)</button>
             <div class="chat-messages scrollbar-thin" id="chatMessages"></div>
-            <div class="chat-input-area">
+            <!-- Composer moved to #mobileComposer overlay at end of <body> for iOS stability -->
+            <div class="chat-input-area desktop-only-composer">
               <div class="chat-input-wrapper glass">
-                <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="autoResize(this)"></textarea>
-                <button class="send-btn" id="sendBtn" onclick="sendChat()">➤</button>
+                <textarea class="chat-input" id="chatInputDesktop" placeholder="Напишите сообщение..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="autoResize(this)"></textarea>
+                <button class="send-btn" id="sendBtnDesktop" onclick="sendChat()">➤</button>
               </div>
             </div>
           </div>
@@ -116,9 +117,9 @@
           <div id="imageHistory" class="space-y-2" style="display:none"></div>
           <div id="imageEmptyState"></div>
         </div>
-        <div class="chat-input-area">
+        <div class="chat-input-area desktop-only-composer">
           <div class="chat-input-wrapper glass" style="border-color:rgba(42,41,53,0.3)">
-            <textarea class="chat-input" id="imageInput" placeholder="Опиши что хочешь увидеть..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateImage()}" oninput="autoResize(this)"></textarea>
+            <textarea class="chat-input" id="imageInputDesktop" placeholder="Опиши что хочешь увидеть..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateImage()}" oninput="autoResize(this)"></textarea>
             <button class="send-btn" onclick="generateImage()">🪄</button>
           </div>
         </div>
@@ -158,9 +159,9 @@
           <div id="videoHistory" class="space-y-2" style="display:none"></div>
           <div id="videoEmptyState"></div>
         </div>
-        <div class="chat-input-area">
+        <div class="chat-input-area desktop-only-composer">
           <div class="chat-input-wrapper glass" style="border-color:rgba(42,41,53,0.3)">
-            <textarea class="chat-input" id="videoInput" placeholder="Опиши сцену для видео..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateVideo()}" oninput="autoResize(this)"></textarea>
+            <textarea class="chat-input" id="videoInputDesktop" placeholder="Опиши сцену для видео..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();generateVideo()}" oninput="autoResize(this)"></textarea>
             <button class="send-btn" onclick="generateVideo()">🎬</button>
           </div>
         </div>
@@ -242,8 +243,16 @@
   </div>
 </div>
 
-<script src="/js/supabase-config.js?v=20260214_2400"></script>
-<script src="/js/auth.js?v=20260214_2400"></script>
-<script src="/js/dashboard.js?v=20260214_2400"></script>
+<!-- Mobile overlay composer: lives outside .dashboard to avoid iOS scroll issues -->
+<div id="mobileComposer" class="mobile-composer-overlay">
+  <div class="chat-input-wrapper glass">
+    <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script src="/js/supabase-config.js?v=20260215_0100"></script>
+<script src="/js/auth.js?v=20260215_0100"></script>
+<script src="/js/dashboard.js?v=20260215_0100"></script>
 </body>
 </html>
