@@ -448,10 +448,12 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
   }
 }
 
-/* When keyboard is open, hide the bottom nav */
+/* When keyboard is open, hide the bottom nav and remove reserved padding */
 body.page-dashboard.nb-kb-open .bottom-nav {
-  opacity: 0;
-  pointer-events: none;
+  display: none;
+}
+body.page-dashboard.nb-kb-open .dashboard-body {
+  padding-bottom: 0;
 }
 body.page-dashboard.nb-kb-open .mobile-composer-overlay {
   padding-bottom: 0.25rem;
