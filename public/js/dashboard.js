@@ -38,6 +38,13 @@
         composer.style.top = "auto";
         composer.style.bottom = Math.round(navH) + "px";
       }
+
+
+      // Set padding-bottom on chat-messages so messages don't scroll behind composer
+      const chatMsgs = document.getElementById("chatMessages");
+      if (chatMsgs) {
+        chatMsgs.style.paddingBottom = Math.round(composerH + 8) + "px";
+      }
     }
 
     // Measure nav/composer for padding
