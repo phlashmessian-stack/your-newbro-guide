@@ -16,6 +16,17 @@
     const keyboardOpen = kbDiff > 50;
     try { document.body.classList.toggle("nb-kb-open", !!keyboardOpen); } catch (e) {}
 
+    // When keyboard is open, shrink the dashboard to fit the visible area
+    // so chat-messages don't extend behind the keyboard
+    const dashboard = document.getElementById("app");
+    if (dashboard && isMobile()) {
+      if (keyboardOpen && vv) {
+        dashboard.style.height = Math.round(vv.height) + "px";
+      } else {
+        dashboard.style.height = "";
+      }
+    }
+
     // Position overlay composer using visualViewport
     const composer = document.getElementById("mobileComposer");
     if (composer && isMobile()) {
@@ -28,19 +39,15 @@
       composer.style.right = "0";
 
       if (keyboardOpen && vv) {
-        // iOS: visualViewport.offsetTop = how much the layout viewport scrolled up
-        // We need to position relative to the VISUAL viewport bottom edge
         const visBottom = vv.offsetTop + vv.height;
         composer.style.top = Math.round(visBottom - composerH) + "px";
         composer.style.bottom = "auto";
       } else {
-        // Keyboard closed: sit above bottom nav
         composer.style.top = "auto";
         composer.style.bottom = Math.round(navH) + "px";
       }
 
-
-      // Set padding-bottom on chat-messages so messages don't scroll behind composer
+      // Set padding-bottom on chat-messages so last message isn't hidden behind composer
       const chatMsgs = document.getElementById("chatMessages");
       if (chatMsgs) {
         chatMsgs.style.paddingBottom = Math.round(composerH + 8) + "px";
