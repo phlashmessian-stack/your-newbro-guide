@@ -51,17 +51,28 @@
 
   // Hard scroll-lock on focus: iOS can still try to scroll the document even with fixed body.
   // Keep the "app shell" anchored at the top.
+  // Double-tap scrollTo: first in setTimeout(0) to catch the initial iOS scroll,
+  // then again in rAF to catch any deferred layout shift.
   document.addEventListener("focusin", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     if (!/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-    setTimeout(() => {
+    const lockScroll = () => {
       try {
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
-        schedule();
       } catch (err) { /* ignore */ }
+    };
+    // Immediate tick
+    setTimeout(() => {
+      lockScroll();
+      schedule();
+      // Second pass after layout
+      requestAnimationFrame(() => {
+        lockScroll();
+        schedule();
+      });
     }, 0);
   }, { passive: true });
 })();
