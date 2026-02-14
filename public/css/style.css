@@ -339,18 +339,25 @@ textarea.input { resize: vertical; min-height: 40px; }
 .footer-right { display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: var(--muted); }
 
 /* ═══ DASHBOARD ═══ */
-/* Prevent "phantom" page scroll on iOS Safari caused by 100vh + dynamic browser UI. */
-html, body { height: 100%; }
-html { -webkit-text-size-adjust: 100%; }
-body.page-dashboard { height: 100vh; overflow: hidden; }
-@supports (height: 100svh) { body.page-dashboard { height: 100svh; } }
-@supports (height: 100dvh) { body.page-dashboard { height: 100dvh; } }
-/* JS can set --nb-vh to visualViewport.height (helps iOS keyboard not overlap the composer). */
+/* App-shell layout: the page NEVER scrolls. Only inner containers scroll.
+   Works on ALL mobile browsers (iOS Safari, Chrome, Samsung Internet, etc.) */
+html.page-dashboard-root,
+body.page-dashboard {
+  height: 100%;
+  overflow: hidden;
+  /* Prevent pull-to-refresh and rubber-band scroll on ALL browsers */
+  overscroll-behavior: none;
+}
+/* Use dvh where supported for iOS dynamic toolbar */
+@supports (height: 100dvh) {
+  html.page-dashboard-root,
+  body.page-dashboard { height: 100dvh; }
+}
+/* JS sets --nb-vh for precise viewport tracking */
 body.page-dashboard { height: var(--nb-vh, 100dvh); }
 
-/* iOS Safari sometimes scrolls the *document* when focusing inputs (even with overflow hidden),
-   which makes the bottom nav "jump" upwards. Lock the page to behave like a native app. */
-@supports (-webkit-touch-callout: none) {
+/* Lock body position on ALL mobile devices (not just Safari) */
+@media (max-width: 768px) {
   body.page-dashboard {
     position: fixed;
     top: 0;
@@ -358,21 +365,28 @@ body.page-dashboard { height: var(--nb-vh, 100dvh); }
     width: 100%;
     height: var(--nb-vh, 100dvh);
     overflow: hidden;
+    overscroll-behavior: none;
+    /* Prevent text selection causing scroll */
+    -webkit-overflow-scrolling: auto;
   }
-}
-
-/* Mobile: keep the whole dashboard as a non-scrolling "app shell".
-   Only dedicated inner areas (chat messages, lists) should scroll. */
-@media (max-width: 768px) {
-  html, body { overflow: hidden; }
-  /* Prevent rubber-band / page scroll chaining on mobile. */
-  body.page-dashboard { overscroll-behavior: none; }
+  body.page-dashboard .dashboard { overflow: hidden; }
   body.page-dashboard .dashboard-body { overflow: hidden; }
   body.page-dashboard .panel-area { overflow: hidden; }
   body.page-dashboard .panel { overflow: hidden; }
-  body.page-dashboard .chat-container { min-height: 0; }
-  body.page-dashboard .chat-main { min-height: 0; }
+  body.page-dashboard .chat-container { min-height: 0; overflow: hidden; }
+  body.page-dashboard .chat-main { min-height: 0; overflow: hidden; }
   body.page-dashboard .chat-messages { min-height: 0; }
+
+  /* Only these containers should scroll */
+  body.page-dashboard .chat-messages,
+  body.page-dashboard .chat-sidebar-list,
+  body.page-dashboard #tokenShopContent,
+  body.page-dashboard #profileContent,
+  body.page-dashboard #roleContent {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* prevent scroll chaining to parent */
+  }
 }
 
 /* --- Mobile composer overlay (outside .dashboard for iOS stability) -------
